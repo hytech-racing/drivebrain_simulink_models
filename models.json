@@ -1,0 +1,4 @@
+{
+    "controllers": ["test_mode0", "test_config", "test_again"],
+    "estimators": []
+}
