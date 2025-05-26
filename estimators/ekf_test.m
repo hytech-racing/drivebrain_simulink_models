@@ -28,6 +28,11 @@ for i = 1:length(str.globalTime)
     % --- measurement update ---
     v_INS = str.VNData.vn_vel_m_s.x(i);  % from INS
 
+    target = data.VNData.status.ins_mode.Timestamp;
+    [~, idx] = min(abs(str.globalTime(i) - target));  % Find index of closest value
+    
+    data.VNData.status.ins_mode.Data(idx)
+
     v_wheels = estimateVxTwoWheels(str.inv3_dynamics.actual_speed_rpm(i), str.inv4_dynamics.actual_speed_rpm(i), 0.2);  % from wheel speed estimator
     yaw_rate_IMU = str.VNData.vn_angular_rate_rad_s.z(i);
     

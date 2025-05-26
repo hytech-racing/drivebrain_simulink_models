@@ -3,3 +3,8 @@
 *.slxc
 *.autosave
 *_ert_rtw/
+zipped_files.json
+*.zip
+slprj/
+data/
+*_inport_info.json
