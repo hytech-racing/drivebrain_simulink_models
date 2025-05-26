@@ -1,4 +1,4 @@
 {
     "controllers": ["test_mode0", "test_pid_tv"],
-    "estimators": []
+    "estimators": ["gain"]
 }
