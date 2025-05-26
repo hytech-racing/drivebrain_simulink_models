@@ -37,6 +37,9 @@ ekf.MeasurementNoise = diag([0.1, 0.1]); % Initial guess
 vx_est = zeros(size(str.globalTime));
 v_wheels_arr = zeros(size(str.globalTime));
 
+% TODO use the VN lock status for changing noise
+% TODO use the VN's velocity error estimate for changing noise 
+
 slip_est = zeros(size(str.globalTime));
 for i = 1:length(str.globalTime)
 
