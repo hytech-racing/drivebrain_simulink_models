@@ -1,4 +1,6 @@
-## fz_estimator inputs:  
+## Estimators
+
+### fz_estimator inputs:  
 - non-param-inputs:  
    1. ax_m_s2
    2. ay_m_s2
@@ -15,7 +17,7 @@
   6. Q (suggested default: 120)
   7. R (suggested default: 70)
  
-## amk_eff_estimator inputs:
+### amk_eff_estimator inputs:
 - non-param_inputs:
   1. torq_Nm_fl (actual torque value from inverters)
   2. torq_Nm_fr
