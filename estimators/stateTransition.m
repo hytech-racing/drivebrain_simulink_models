@@ -1,7 +1,7 @@
-function x_next = stateTransition(x, u, dt)
+function x_next = stateTransition(x, u)
     % State: [Vx; omega; ax_filt]
     % Input: u(1) = raw ax
-
+    dt = 0.004;
     Vx = x(1);
     omega = x(2);
     ax_filt = x(3);

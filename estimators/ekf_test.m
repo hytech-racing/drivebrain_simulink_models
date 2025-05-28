@@ -31,16 +31,14 @@ initialState=[0,0,0];
 
 dt = 0.01;
 stateFcn = @(x, u) stateTransition(x, u, dt);
-ekf = extendedKalmanFilter(stateFcn, @measFunc, initialState);
+ekf = extendedKalmanFilter(@stateTransition, @measFunc, initialState);
 ekf.StateCovariance = 1e-2;
 ekf.MeasurementNoise = diag([0.1, 0.1]); % Initial guess
-
+ekf.ProcessNoise = diag([0.2, 0.2, 0.2]);
 vx_est = zeros(size(str.globalTime));
 ax_est = zeros(size(str.globalTime));
 v_wheels_arr = zeros(size(str.globalTime));
 
-% TODO use front wheels for vel estimate when accelerating and use rears
-% when braking
 tr = 1.2;
 
 slip_est = zeros(size(str.globalTime));
@@ -52,7 +50,7 @@ for i = 1:length(str.globalTime)
     ax_IMU = str.VNData.vn_linear_accel_m_ss.x(i);
 
     [pred_state, pred_state_cov] = ekf.predict(ax_IMU);  % use dt internally or pass dt if needed
-    
+    pred_state
     vx_est(i) = pred_state(1);
     ax_est(i) = pred_state(3);
     % --- measurement update ---
@@ -84,20 +82,8 @@ for i = 1:length(str.globalTime)
     
     
     % --- adaptive noise tuning ---
-    ins_noise =0;
-    if(str.VNData.status.ins_mode_int(i) ==0)
-        ins_noise = 100;
-    elseif(str.VNData.status.ins_mode_int(i)==1)
-        ins_noise = abs(str.VNData.status.ins_vel_u(i))*10;
-    elseif(str.VNData.status.ins_mode_int(i)==2)
-        ins_noise = abs(str.VNData.status.ins_vel_u(i));
-    else
-        ins_noise = 0.5;
-    end
-
-    if( (v_wheels > 0) & (v_INS < 0))
-        ins_noise = 20;
-    end
+    ins_noise = estimateINSNoise(str.VNData.status.ins_mode_int(i), str.VNData.status.ins_vel_u(i), v_wheels, v_INS);
+    
     ins_noises(i) = ins_noise;
     
     ekf.MeasurementNoise = diag([
