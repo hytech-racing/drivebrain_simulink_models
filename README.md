@@ -42,6 +42,8 @@ Default values for foxglove params are marked in parentheses. Estimators that de
   - speed_rpm_fr
   - speed_rpm_rl
   - speed_rpm_rr
+- foxglove params:
+  - amk_eff_modifier
 
 ### vel_estimator inputs:
 - non-param-inputs:
