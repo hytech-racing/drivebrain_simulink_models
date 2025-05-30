@@ -1,6 +1,11 @@
 % Get a list of all .mat files in the folder
-folderPath = 'shared_data'
-matFiles = dir(fullfile(folderPath, '*.mat'));
+
+fullPath = mfilename("fullpath");
+
+currentDir = fileparts(fullPath);
+
+folderPath = fullfile(currentDir, 'shared_data');
+matFiles = dir(fullfile(currentDir, 'shared_data', '*.mat'));
 
 % Loop through each file and load it
 for k = 1:length(matFiles)
