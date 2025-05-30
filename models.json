@@ -1,4 +1,4 @@
 {
-    "controllers": [],
+    "controllers": ["qp_torq_allocator"],
     "estimators": ["estimator"]
 }
