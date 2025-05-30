@@ -1,4 +1,4 @@
 {
-    "controllers": ["test_pid_tv", "qp_torq_allocator"],
-    "estimators": ["wheel_steer_estimator", "fz_estimator", "amk_eff_estimator", "vel_estimator", "intent_estimator", "tire_estimator"]
+    "controllers": [],
+    "estimators": ["estimator"]
 }
