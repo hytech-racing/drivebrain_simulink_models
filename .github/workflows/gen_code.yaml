@@ -1,0 +1,87 @@
+name: run gen code on matlab runner on dispatch from simulink repo
+on:
+  workflow_dispatch: 
+  repository_dispatch:
+  push:
+
+env:
+  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }} # Defined as a secret in GitHub conf
+
+jobs:
+  create-artifact:
+    name: Generate source code from simulink models and create artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository drivebrain_simulink_models
+        uses: actions/checkout@v4
+        
+
+      - name: Checkout another repository
+        uses: actions/checkout@v4
+        with:
+          repository: hytech-racing/simulink_automation
+          token: ${{ secrets.GITHUB_TOKEN }} # or a PAT if access is restricted
+          path: simulink_automation
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2.5
+        with:
+          release: R2024bU6
+          cache: true
+          products: |
+            Simulink
+            Signal_Processing_Toolbox
+            Simulink_Coder
+            Embedded_Coder
+            Phased_Array_System_Toolbox
+            Control_System_Toolbox
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Mako
+        run: |
+          pip install mako
+      - name: add drivebrain models to path
+        uses: matlab-actions/run-command@v2
+        with:
+          command: addpath(genpath(pwd));
+      
+      - name: move to simulink automation path
+        run: cd simulink_automation
+
+      - name: add simulink automation to path
+        uses: matlab-actions/run-command@v2
+        with:
+          command: addpath(genpath(pwd));
+      
+      - name: Run 
+        uses: matlab-actions/run-command@v2
+        with:
+          command: gencode_v2
+      
+      - name: Generate cpp lib script
+        run: |
+          mkdir gen_release
+          python process_simulink_codegen.py gen_release
+
+      - name: Create cpp lib release artifact
+        run: | 
+          tar -czvf release.tar.gz gen_release
+
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::CodeGen_$(date +"%Y.%m.%d_%H-%M")"
+
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ steps.tag.outputs.release_tag }}
+      #     files: |
+      #       release.tar.gz
+            
