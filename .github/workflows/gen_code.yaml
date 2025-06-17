@@ -52,6 +52,10 @@ jobs:
       - name: move to simulink automation path
         run: cd simulink_automation
 
+      - name: test
+        run: | 
+          pwd
+          ls
       - name: add simulink automation to path
         uses: matlab-actions/run-command@v2
         with:
