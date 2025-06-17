@@ -54,9 +54,9 @@ jobs:
           ls
 
       - name: move to simulink automation path
-        run: cd simulink_automation/simulink_automation
+        run: cd simulink_automation
 
-      - name: test
+      - name: test im sim?
         run: | 
           pwd
           ls
