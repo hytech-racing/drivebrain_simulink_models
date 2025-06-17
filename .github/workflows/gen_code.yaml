@@ -48,9 +48,13 @@ jobs:
         uses: matlab-actions/run-command@v2
         with:
           command: addpath(genpath(pwd));
-      
+      - name: test
+        run: | 
+          pwd
+          ls
+
       - name: move to simulink automation path
-        run: cd simulink_automation
+        run: cd ../simulink_automation
 
       - name: test
         run: | 
