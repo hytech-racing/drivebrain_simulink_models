@@ -59,7 +59,10 @@ jobs:
       - name: Run 
         uses: matlab-actions/run-command@v2
         with:
-          command: simulink_automation/gencode_v2
+          command: |
+            cd(fullfile(getenv('GITHUB_WORKSPACE'), 'simulink_automation'));
+            addpath(genpath(pwd));
+            gencode_v2;
       
       - name: Generate cpp lib script
         run: |
