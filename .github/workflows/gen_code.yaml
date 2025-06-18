@@ -19,79 +19,64 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hytech-racing/simulink_automation 
-          token: ${{ secrets.GITHUB_TOKEN }} # or a PAT if access is restricted
+          token: ${{ secrets.GITHUB_TOKEN }}
           path: simulink_automation
 
-      # - name: Set up MATLAB
-      #   uses: matlab-actions/setup-matlab@v2.5
-      #   with:
-      #     release: R2024bU6
-      #     cache: true
-      #     products: |
-      #       Simulink
-      #       Signal_Processing_Toolbox
-      #       Simulink_Coder
-      #       Embedded_Coder
-      #       Phased_Array_System_Toolbox
-      #       Control_System_Toolbox
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2.5
+        with:
+          release: R2024bU6
+          cache: true
+          products: |
+            Simulink
+            Signal_Processing_Toolbox
+            Simulink_Coder
+            Embedded_Coder
+            Phased_Array_System_Toolbox
+            Control_System_Toolbox
       
-      # - name: Set up Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-      # - name: Install Mako
-      #   run: |
-      #     pip install mako
+      - name: Install Mako
+        run: |
+          pip install mako
       
-      # - name: add drivebrain models to path
-      #   uses: matlab-actions/run-command@v2
-      #   with:
-      #     command: addpath(genpath(pwd));
-      
-      - name: test
-        run: | 
-          pwd
-          ls
-
+      - name: add drivebrain models to path
+        uses: matlab-actions/run-command@v2
+        with:
+          command: addpath(genpath(pwd));
+    
       - name: move to simulink automation path
         run: cd simulink_automation
+      
+      - name: Run 
+        uses: matlab-actions/run-command@v2
+        with:
+          command: gencode_v2
+      
+      - name: Generate cpp lib script
+        run: |
+          mkdir gen_release
+          python process_simulink_codegen.py gen_release
 
-      - name: test im sim?
+      - name: Create cpp lib release artifact
         run: | 
-          pwd
-          ls
-      
-      # - name: add simulink automation to path
-      #   uses: matlab-actions/run-command@v2
-      #   with:
-      #     command: addpath(genpath(pwd));
-      
-      # - name: Run 
-      #   uses: matlab-actions/run-command@v2
-      #   with:
-      #     command: gencode_v2
-      
-      # - name: Generate cpp lib script
-      #   run: |
-      #     mkdir gen_release
-      #     python process_simulink_codegen.py gen_release
+          tar -czvf release.tar.gz gen_release
 
-      # - name: Create cpp lib release artifact
-      #   run: | 
-      #     tar -czvf release.tar.gz gen_release
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::CodeGen_$(date +"%Y.%m.%d_%H-%M")"
 
-      # - name: Generate release tag
-      #   id: tag
-      #   run: |
-      #     echo "::set-output name=release_tag::CodeGen_$(date +"%Y.%m.%d_%H-%M")"
-
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ steps.tag.outputs.release_tag }}
-      #     files: |
-      #       release.tar.gz
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          files: |
+            release.tar.gz
             
