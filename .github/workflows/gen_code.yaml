@@ -18,7 +18,7 @@ jobs:
       - name: Checkout another repository
         uses: actions/checkout@v4
         with:
-          repository: hytech-racing/simulink_automation
+          repository: hytech-racing/simulink_automation 
           token: ${{ secrets.GITHUB_TOKEN }} # or a PAT if access is restricted
           path: simulink_automation
 
