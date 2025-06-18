@@ -54,31 +54,26 @@ jobs:
 
       - name: Add ls to test
         run: |
-          ls
-        working-directory: simulink_automation
+          ls simulink_automation
       
       - name: Run 
         uses: matlab-actions/run-command@v2
         with:
-          command: gencode_v2
-        working-directory: simulink_automation
+          command: simulink_automation/gencode_v2
       
       - name: Generate cpp lib script
         run: |
           mkdir gen_release
-          python process_simulink_codegen.py gen_release
-        working-directory: simulink_automation
+          python simulink_automation/process_simulink_codegen.py gen_release
 
       - name: Create cpp lib release artifact
         run: | 
-          tar -czvf release.tar.gz gen_release
-        working-directory: simulink_automation
+          tar -czvf release.tar.gz simulink_automation/gen_release
 
       - name: Generate release tag
         id: tag
         run: |
           echo "::set-output name=release_tag::CodeGen_$(date +"%Y.%m.%d_%H-%M")"
-        working-directory: simulink_automation
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -87,6 +82,5 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: |
-            release.tar.gz
-        working-directory: simulink_automation
+            simulink_automation/release.tar.gz
             
