@@ -43,11 +43,6 @@ jobs:
       - name: Install Mako
         run: |
           pip install mako
-      
-      - name: add drivebrain models to path
-        uses: matlab-actions/run-command@v2
-        with:
-          command: addpath(genpath(pwd));
     
       - name: move to simulink automation path
         run: cd simulink_automation
@@ -60,13 +55,14 @@ jobs:
         uses: matlab-actions/run-command@v2
         with:
           command: |
+            addpath(genpath(pwd));
             cd(fullfile(getenv('GITHUB_WORKSPACE'), 'simulink_automation'));
             addpath(genpath(pwd));
             gencode_v2;
       
       - name: Generate cpp lib script
         run: |
-          mkdir gen_release
+          mkdir simulink_automation/gen_release
           python simulink_automation/process_simulink_codegen.py gen_release
 
       - name: Create cpp lib release artifact
