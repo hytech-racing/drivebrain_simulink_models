@@ -25,7 +25,7 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v2.5
         with:
-          release: R2024bU6
+          release: R2024bU5
           cache: true
           products: |
             Simulink
