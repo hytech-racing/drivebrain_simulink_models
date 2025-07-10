@@ -1,7 +1,7 @@
 #!/bin/bash
-rm -rf slprj
-rm */*/*.autosave
-rm */*.autosave
-rm -rf *_ert_rtw
-rm *.zip
-rm *.slxc
+rm -rf slprj || true
+rm */*/*.autosave || true
+rm */*.autosave || true
+rm -rf *_ert_rtw || true
+rm *.zip || true
+rm *.slxc || true
