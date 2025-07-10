@@ -54,6 +54,7 @@ jobs:
       - name: clean
         run: |
           ./clean.sh
+        if: ${{ always() }}
         
       - name: Run 
         uses: matlab-actions/run-command@v2
