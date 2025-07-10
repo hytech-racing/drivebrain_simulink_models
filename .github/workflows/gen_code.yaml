@@ -51,13 +51,16 @@ jobs:
         run: |
           ls simulink_automation
       
+      - name: clean
+        run: |
+          ./clean.sh
+        
       - name: Run 
         uses: matlab-actions/run-command@v2
         with:
           command: |
             addpath(genpath(pwd));
             cd(fullfile(getenv('GITHUB_WORKSPACE'), 'simulink_automation'));
-            addpath(genpath(pwd));
             gencode_v2;
       
       - name: Generate cpp lib script
