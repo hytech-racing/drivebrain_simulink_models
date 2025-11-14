@@ -63,7 +63,7 @@ jobs:
       - name: Generate cpp lib
         working-directory: simulink_automation
         run: |
-          mkdir gen_release
+          mkdir -p gen_release
           python process_simulink_codegen.py gen_release
 
       - name: Create artifact
@@ -81,4 +81,5 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: simulink_automation/release.tar.gz
+
 
