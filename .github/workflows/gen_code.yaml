@@ -36,6 +36,7 @@ jobs:
             Embedded_Coder
             Phased_Array_System_Toolbox
             Control_System_Toolbox
+            Optimization_Toolbox
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -88,4 +89,5 @@ jobs:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: |
             simulink_automation/release.tar.gz
+
             
