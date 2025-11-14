@@ -68,18 +68,25 @@ jobs:
 
       - name: Create artifact
         working-directory: simulink_automation
-        run: tar -czvf release.tar.gz gen_release
+        run: tar -czvf gen_rel.tar.gz gen_release
 
-      - name: Generate release tag
-        id: tag
-        run: echo "release_tag=CodeGen_$(date +"%Y.%m.%d_%H-%M")" >> $GITHUB_OUTPUT
+      - name: Compute sequential rel## tag
+        id: reltag
+        run: |
+          n=$(gh release list --limit 200 | grep -Eo '^rel[0-9]+' | sed 's/rel//' | sort -n | tail -1)
+          if [ -z "$n" ]; then
+            n=1
+          else
+            n=$((n + 1))
+          fi
+          printf "tag=rel%02d" "$n" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: simulink_automation/release.tar.gz
-
-
+          tag_name: ${{ steps.reltag.outputs.tag }}
+          files: simulink_automation/gen_rel.tar.gz
