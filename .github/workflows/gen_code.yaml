@@ -1,26 +1,26 @@
 name: run gen code on matlab runner on dispatch from simulink repo
+
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   repository_dispatch:
   push:
 
 env:
-  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }} # Defined as a secret in GitHub conf
+  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
 
 jobs:
   create-artifact:
-    name: Generate source code from simulink models and create artifact
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository drivebrain_simulink_models
+      - name: Checkout drivebrain_simulink_models
         uses: actions/checkout@v4
         with:
           clean: true
         
-      - name: Checkout another repository
+      - name: Checkout simulink_automation
         uses: actions/checkout@v4
         with:
-          repository: hytech-racing/simulink_automation 
+          repository: hytech-racing/simulink_automation
           token: ${{ secrets.GITHUB_TOKEN }}
           path: simulink_automation
 
@@ -44,42 +44,35 @@ jobs:
           python-version: '3.x'
 
       - name: Install Mako
-        run: |
-          pip install mako
+        run: pip install mako
     
-      - name: move to simulink automation path
-        run: cd simulink_automation
+      - name: ls debug
+        run: ls simulink_automation
 
-      - name: Add ls to test
-        run: |
-          ls simulink_automation
-      
-      - name: clean
-        run: |
-          ./clean.sh
+      - name: Clean
+        run: ./simulink_automation/clean.sh
         if: ${{ always() }}
         
-      - name: Run 
+      - name: Run MATLAB
         uses: matlab-actions/run-command@v2
         with:
           command: |
-            addpath(genpath(pwd));
-            cd(fullfile(getenv('GITHUB_WORKSPACE'), 'simulink_automation'));
+            repo = getenv('GITHUB_WORKSPACE');
+            addpath(genpath(fullfile(repo, 'simulink_automation')));
+            cd(fullfile(repo, 'simulink_automation'));
             gencode_v2;
-      
-      - name: Generate cpp lib script
+
+      - name: Generate cpp lib
         run: |
           mkdir simulink_automation/gen_release
           python simulink_automation/process_simulink_codegen.py gen_release
 
-      - name: Create cpp lib release artifact
-        run: | 
-          tar -czvf release.tar.gz simulink_automation/gen_release
+      - name: Create artifact
+        run: tar -czvf simulink_automation/release.tar.gz simulink_automation/gen_release
 
       - name: Generate release tag
         id: tag
-        run: |
-          echo "::set-output name=release_tag::CodeGen_$(date +"%Y.%m.%d_%H-%M")"
+        run: echo "release_tag=CodeGen_$(date +"%Y.%m.%d_%H-%M")" >> $GITHUB_OUTPUT
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -87,7 +80,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: |
-            simulink_automation/release.tar.gz
-
-            
+          files: simulink_automation/release.tar.gz
