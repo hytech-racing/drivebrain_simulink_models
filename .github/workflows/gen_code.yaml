@@ -55,6 +55,7 @@ jobs:
           command: |
             repo = getenv('GITHUB_WORKSPACE');
             sim = fullfile(repo, 'simulink_automation');
+            addpath(genpath(repo));
             addpath(genpath(sim));
             cd(sim);
             gencode_v2;
@@ -80,3 +81,4 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: simulink_automation/release.tar.gz
+
