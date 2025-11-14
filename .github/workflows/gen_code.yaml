@@ -1,5 +1,4 @@
 name: run gen code on matlab runner on dispatch from simulink repo
-
 on:
   workflow_dispatch:
   repository_dispatch:
@@ -16,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-        
+
       - name: Checkout simulink_automation
         uses: actions/checkout@v4
         with:
@@ -37,7 +36,7 @@ jobs:
             Phased_Array_System_Toolbox
             Control_System_Toolbox
             Optimization_Toolbox
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -45,30 +44,30 @@ jobs:
 
       - name: Install Mako
         run: pip install mako
-    
-      - name: ls debug
-        run: ls simulink_automation
 
       - name: Clean
-        run: ./simulink_automation/clean.sh
-        if: ${{ always() }}
-        
+        working-directory: simulink_automation
+        run: ./clean.sh
+
       - name: Run MATLAB
         uses: matlab-actions/run-command@v2
         with:
           command: |
             repo = getenv('GITHUB_WORKSPACE');
-            addpath(genpath(fullfile(repo, 'simulink_automation')));
-            cd(fullfile(repo, 'simulink_automation'));
+            sim = fullfile(repo, 'simulink_automation');
+            addpath(genpath(sim));
+            cd(sim);
             gencode_v2;
 
       - name: Generate cpp lib
+        working-directory: simulink_automation
         run: |
-          mkdir simulink_automation/gen_release
-          python simulink_automation/process_simulink_codegen.py gen_release
+          mkdir gen_release
+          python process_simulink_codegen.py gen_release
 
       - name: Create artifact
-        run: tar -czvf simulink_automation/release.tar.gz simulink_automation/gen_release
+        working-directory: simulink_automation
+        run: tar -czvf release.tar.gz gen_release
 
       - name: Generate release tag
         id: tag
