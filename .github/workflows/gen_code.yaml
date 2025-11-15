@@ -1,26 +1,25 @@
 name: run gen code on matlab runner on dispatch from simulink repo
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   repository_dispatch:
   push:
 
 env:
-  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }} # Defined as a secret in GitHub conf
+  MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
 
 jobs:
   create-artifact:
-    name: Generate source code from simulink models and create artifact
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository drivebrain_simulink_models
+      - name: Checkout drivebrain_simulink_models
         uses: actions/checkout@v4
         with:
           clean: true
-        
-      - name: Checkout another repository
+
+      - name: Checkout simulink_automation
         uses: actions/checkout@v4
         with:
-          repository: hytech-racing/simulink_automation 
+          repository: hytech-racing/simulink_automation
           token: ${{ secrets.GITHUB_TOKEN }}
           path: simulink_automation
 
@@ -37,57 +36,58 @@ jobs:
             Phased_Array_System_Toolbox
             Control_System_Toolbox
             Optimization_Toolbox
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
       - name: Install Mako
-        run: |
-          pip install mako
-    
-      - name: move to simulink automation path
-        run: cd simulink_automation
+        run: pip install mako
 
-      - name: Add ls to test
-        run: |
-          ls simulink_automation
-      
-      - name: clean
-        run: |
-          ./clean.sh
-        if: ${{ always() }}
-        
-      - name: Run 
+      - name: Clean
+        working-directory: simulink_automation
+        run: ./clean.sh
+
+      - name: Run MATLAB
         uses: matlab-actions/run-command@v2
         with:
           command: |
-            addpath(genpath(pwd));
-            cd(fullfile(getenv('GITHUB_WORKSPACE'), 'simulink_automation'));
+            repo = getenv('GITHUB_WORKSPACE');
+            sim = fullfile(repo, 'simulink_automation');
+            addpath(genpath(repo));
+            addpath(genpath(sim));
+            cd(sim);
             gencode_v2;
-      
-      - name: Generate cpp lib script
-        run: |
-          mkdir simulink_automation/gen_release
-          python simulink_automation/process_simulink_codegen.py gen_release
 
-      - name: Create cpp lib release artifact
-        run: | 
-          tar -czvf release.tar.gz simulink_automation/gen_release
-
-      - name: Generate release tag
-        id: tag
+      - name: Generate cpp lib
+        working-directory: simulink_automation
         run: |
-          echo "::set-output name=release_tag::CodeGen_$(date +"%Y.%m.%d_%H-%M")"
+          mkdir -p gen_release
+          python process_simulink_codegen.py gen_release
+
+      - name: Create artifact
+        working-directory: simulink_automation
+        run: tar -czvf gen_rel.tar.gz gen_release
+
+      - name: Compute sequential rel## tag
+        id: reltag
+        run: |
+          n=$(gh release list --limit 200 | grep -Eo '^rel[0-9]+' | sed 's/rel//' | sort -n | tail -1)
+          if [ -z "$n" ]; then
+            n=1
+          else
+            n=$((n + 1))
+          fi
+          printf "tag=rel%02d" "$n" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
+        if: github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: |
-            simulink_automation/release.tar.gz
-
-            
+          tag_name: ${{ steps.reltag.outputs.tag }}
+          files: simulink_automation/gen_rel.tar.gz
