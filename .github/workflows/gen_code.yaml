@@ -66,9 +66,13 @@ jobs:
           mkdir -p gen_release
           python process_simulink_codegen.py gen_release
 
-      - name: Create artifact
+      - name: Create proto artifact
         working-directory: simulink_automation
-        run: tar -czvf gen_rel.tar.gz gen_release
+        run: tar -czvf proto_outputs.tar.gz gen_release/proto_outputs
+
+      - name: Create codegen artifact
+        working-directory: simulink_automation
+        run: tar -czvf codegen_outputs.tar.gz gen_release/source_code
 
       - name: Compute sequential rel## tag
         id: reltag
@@ -83,11 +87,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release
+      - name: Release proto outputs
         if: github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.reltag.outputs.tag }}
-          files: simulink_automation/gen_rel.tar.gz
+          files: simulink_automation/proto_outputs.tar.gz
