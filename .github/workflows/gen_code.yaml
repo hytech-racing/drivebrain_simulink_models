@@ -45,7 +45,7 @@ jobs:
       - name: Install Mako
         run: pip install mako 
 
-      - name: Clean
+      - name: Clean 
         working-directory: simulink_automation
         run: ./clean.sh
 
