@@ -62,7 +62,7 @@ jobs:
 
       - name: Generate cpp lib
         working-directory: simulink_automation
-        run: |
+        run: | 
           mkdir -p gen_release
           python process_simulink_codegen.py gen_release
 
