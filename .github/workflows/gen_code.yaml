@@ -57,7 +57,7 @@ jobs:
             sim = fullfile(repo, 'simulink_automation');
             addpath(genpath(repo));
             addpath(genpath(sim));
-            cd(sim);
+            cd(sim); 
             gencode_v2; 
 
       - name: Generate cpp lib
