@@ -66,7 +66,7 @@ jobs:
           mkdir -p gen_release
           python process_simulink_codegen.py gen_release
 
-      - name: Create proto artifact
+      - name: Create proto artifact 
         working-directory: simulink_automation
         run: tar -czvf proto_outputs.tar.gz gen_release/proto_outputs
 
