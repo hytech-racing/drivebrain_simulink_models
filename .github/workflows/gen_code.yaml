@@ -75,7 +75,7 @@ jobs:
         run: tar -czvf codegen_outputs.tar.gz -C gen_release source_code
 
       - name: Compute sequential rel## tag
-        id: reltag
+        id: reltag 
         run: |
           n=$(gh release list --limit 200 | grep -Eo '^rel[0-9]+' | sed 's/rel//' | sort -n | tail -1)
           if [ -z "$n" ]; then
