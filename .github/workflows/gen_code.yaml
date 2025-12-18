@@ -50,7 +50,7 @@ jobs:
         run: ./clean.sh
 
       - name: Run MATLAB
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v2 
         with:
           command: |
             repo = getenv('GITHUB_WORKSPACE');
