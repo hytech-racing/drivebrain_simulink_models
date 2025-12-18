@@ -58,7 +58,7 @@ jobs:
             addpath(genpath(repo));
             addpath(genpath(sim));
             cd(sim);
-            gencode_v2;
+            gencode_v2; 
 
       - name: Generate cpp lib
         working-directory: simulink_automation
