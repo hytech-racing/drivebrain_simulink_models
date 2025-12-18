@@ -43,7 +43,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Mako
-        run: pip install mako
+        run: pip install mako 
 
       - name: Clean
         working-directory: simulink_automation
