@@ -68,11 +68,11 @@ jobs:
 
       - name: Create proto artifact
         working-directory: simulink_automation
-        run: tar -czvf proto_outputs.tar.gz gen_release/proto_outputs
+        run: tar -czvf proto_outputs.tar.gz -C gen_release proto_outputs
 
       - name: Create codegen artifact
         working-directory: simulink_automation
-        run: tar -czvf codegen_outputs.tar.gz gen_release/source_code
+        run: tar -czvf codegen_outputs.tar.gz -C gen_release source_code
 
       - name: Compute sequential rel## tag
         id: reltag
