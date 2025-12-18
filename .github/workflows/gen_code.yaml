@@ -64,7 +64,7 @@ jobs:
         working-directory: simulink_automation
         run: | 
           mkdir -p gen_release
-          python process_simulink_codegen.py gen_release
+          python process_simulink_codegen.py gen_release 
 
       - name: Create proto artifact
         working-directory: simulink_automation
