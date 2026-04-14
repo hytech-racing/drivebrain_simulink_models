@@ -8,3 +8,4 @@ zipped_files.json
 slprj/
 data/
 *_inport_info.json
+*.original
