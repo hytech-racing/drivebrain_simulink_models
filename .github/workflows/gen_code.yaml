@@ -36,6 +36,7 @@ jobs:
             Phased_Array_System_Toolbox
             Control_System_Toolbox
             Optimization_Toolbox
+            Statistics_and_Machine_Learning_Toolbox
 
       - name: Set up Python
         uses: actions/setup-python@v4
